@@ -62,13 +62,13 @@
 app.yaml内容如下
 
 ```
-project:            		  #涉及代码中依赖包的路径{project.name}/app/{project.module}
-  name: halo        		  #项目名称
-  module: blog      		  #模块名称        
+project:            	      #涉及代码中依赖包的路径{project.name}/app/{project.module}
+  name: halo        	      #项目名称
+  module: blog      	      #模块名称        
 table:
-  names: t_user     		  #生成表的名称多个用逗号隔开如t_user,t_role
-  prefix: t_        		  #表名称前缀，实体类生成会将表名前缀去掉
-mysql:              		  #数据库连接信息
+  names: t_user     	      #生成表的名称多个用逗号隔开如t_user,t_role
+  prefix: t_        	      #表名称前缀，实体类生成会将表名前缀去掉
+mysql:              	      #数据库连接信息
   username: root              #用户名
   password: 123456            #密码
   driver: mysql               #驱动
