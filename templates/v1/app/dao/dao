@@ -1,0 +1,67 @@
+package dao
+
+import (
+	"{{ ProjectName }}/app/{{ ModuleName }}/model"
+	"{{ ProjectName }}/core"
+	"{{ ProjectName }}/core/db"
+	"log"
+)
+
+type {{ ModelName|capfirst }}Dao struct {
+}
+
+func ({{ ModelName|substr:"0,1" }} *{{ ModelName|capfirst }}Dao) Insert{{ ModelName|capfirst }}({{ ModelName }} *model.{{ ModelName|capfirst }}) ({{ ModelName|substr:"0,1" }}id uint) {
+	result := db.Db.Create({{ ModelName }})
+	if result.Error == nil {
+		log.Println("insert{{ ModelName|capfirst }} failed")
+	}
+	{{ ModelName|substr:"0,1" }}id = {{ ModelName }}.ID
+	return
+}
+
+func ({{ ModelName|substr:"0,1" }} *{{ ModelName|capfirst }}Dao) Delete{{ ModelName|capfirst }}({{ ModelName }} *model.{{ ModelName|capfirst }}) bool {
+	//hard delete
+	result := db.Db.Unscoped().Delete({{ ModelName }})
+	//soft delete
+	//result := db.Db.Delete({{ ModelName }})
+	if result.Error != nil {
+		log.Println("Delete{{ ModelName|capfirst }} failed")
+		return false
+	}
+	return true
+}
+
+func ({{ ModelName|substr:"0,1" }} *{{ ModelName|capfirst }}Dao) Update{{ ModelName|capfirst }}({{ ModelName }} *model.{{ ModelName|capfirst }}) bool {
+	result := db.Db.Updates({{ ModelName }})
+	if result.Error != nil {
+		log.Println("Delete{{ ModelName|capfirst }} failed")
+		return false
+	}
+	return true
+}
+
+func ({{ ModelName|substr:"0,1" }} *{{ ModelName|capfirst }}Dao) Get({{ ModelName }} *model.{{ ModelName|capfirst }}) (result *model.{{ ModelName|capfirst }}) {
+	result = &model.{{ ModelName|capfirst }}{}
+	err := db.Db.Find(result,{{ ModelName }}.ID).Error
+	if err != nil {
+		return nil
+	}
+	return
+}
+
+func ({{ ModelName|substr:"0,1" }} *{{ ModelName|capfirst }}Dao) GetPage({{ ModelName }} *model.{{ ModelName|capfirst }}) (pageRsp *core.PageRsp) {
+	pageRsp = core.GetPageRsp()
+	result := make([]model.{{ ModelName|capfirst }}, {{ ModelName }}.Size)
+	db.Db.Table("{{ TableName }}").Count(&pageRsp.Total)
+    err := db.Db.Offset(({{ ModelName }}.Page - 1) * {{ ModelName }}.Size).Limit({{ ModelName }}.Size).Find(&result).Error
+    if err != nil {
+        return nil
+    }
+    pageRsp.Result = result
+    if pageRsp.Total%int64({{ ModelName }}.Size) > 0 {
+        pageRsp.Pages = int(pageRsp.Total/int64({{ ModelName }}.Size)) + 1
+    } else {
+        pageRsp.Pages = int(pageRsp.Total / int64({{ ModelName }}.Size))
+    }
+	return
+}

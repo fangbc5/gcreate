@@ -1,0 +1,16 @@
+package blog
+
+import (
+	"github.com/gin-gonic/gin"
+	"{{ ProjectName }}/app/{{ ModuleName }}/api"
+)
+
+func Routers(e *gin.Engine) {
+	{{ ModelName }}Api := api.{{ ModelName|capfirst }}Api{}
+	{{ ModelName }}Group := e.Group("/{{ ModelName }}")
+	{{ ModelName }}Group.POST("/insert", {{ ModelName }}Api.Insert{{ ModelName|capfirst }})
+	{{ ModelName }}Group.POST("/delete", {{ ModelName }}Api.Delete{{ ModelName|capfirst }})
+	{{ ModelName }}Group.POST("/update", {{ ModelName }}Api.Update{{ ModelName|capfirst }})
+	{{ ModelName }}Group.POST("/get", {{ ModelName }}Api.Get)
+	{{ ModelName }}Group.POST("/getPage", {{ ModelName }}Api.GetPage)
+}

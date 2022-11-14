@@ -1,0 +1,63 @@
+package api
+
+import (
+	"github.com/gin-gonic/gin"
+	"{{ ProjectName }}/app/{{ ModuleName }}/model"
+	"{{ ProjectName }}/app/{{ ModuleName }}/service"
+
+	"net/http"
+)
+
+type {{ ModelName|capfirst }}Api struct {
+	service.{{ ModelName|capfirst }}Service
+}
+
+func ({{ ModelName|substr:"0,1" }} *{{ ModelName|capfirst }}Api) Insert{{ ModelName|capfirst }}(c *gin.Context) {
+	{{ ModelName }} := &model.{{ ModelName|capfirst }}{}
+	err := c.ShouldBindJSON({{ ModelName }})
+	if err != nil {
+		return
+	}
+	result := {{ ModelName|substr:"0,1" }}.{{ ModelName|capfirst }}Service.Insert{{ ModelName|capfirst }}({{ ModelName }})
+	c.JSON(http.StatusOK, result)
+}
+
+func ({{ ModelName|substr:"0,1" }} *{{ ModelName|capfirst }}Api) Delete{{ ModelName|capfirst }}(c *gin.Context) {
+	{{ ModelName }} := &model.{{ ModelName|capfirst }}{}
+	err := c.ShouldBindJSON({{ ModelName }})
+	if err != nil {
+		return
+	}
+	result := {{ ModelName|substr:"0,1" }}.{{ ModelName|capfirst }}Service.Delete{{ ModelName|capfirst }}({{ ModelName }})
+	c.JSON(http.StatusOK, result)
+}
+
+func ({{ ModelName|substr:"0,1" }} *{{ ModelName|capfirst }}Api) Update{{ ModelName|capfirst }}(c *gin.Context) {
+	{{ ModelName }} := &model.{{ ModelName|capfirst }}{}
+	err := c.ShouldBindJSON({{ ModelName }})
+	if err != nil {
+		return
+	}
+	result := {{ ModelName|substr:"0,1" }}.{{ ModelName|capfirst }}Service.Update{{ ModelName|capfirst }}({{ ModelName }})
+	c.JSON(http.StatusOK, result)
+}
+
+func ({{ ModelName|substr:"0,1" }} *{{ ModelName|capfirst }}Api) Get(c *gin.Context) {
+	{{ ModelName }} := &model.{{ ModelName|capfirst }}{}
+	err := c.ShouldBindJSON({{ ModelName }})
+	if err != nil {
+		return
+	}
+	result := {{ ModelName|substr:"0,1" }}.{{ ModelName|capfirst }}Service.Get({{ ModelName }})
+	c.JSON(http.StatusOK, result)
+}
+
+func ({{ ModelName|substr:"0,1" }} *{{ ModelName|capfirst }}Api) GetPage(c *gin.Context) {
+	{{ ModelName }} := &model.{{ ModelName|capfirst }}{}
+    err := c.ShouldBindJSON({{ ModelName }})
+    if err != nil {
+        return
+    }
+    pageRsp := {{ ModelName|substr:"0,1" }}.UserService.GetPage({{ ModelName }})
+    c.JSON(http.StatusOK, pageRsp)
+}
