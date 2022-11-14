@@ -6,9 +6,9 @@ table:
   prefix: t_        #表名称前缀，实体类生成会将表名前缀去掉
 mysql:              #数据库连接信息
   username: root              #用户名
-  password: 1qaz!QAZ          #密码
+  password: 123456          #密码
   driver: mysql               #驱动
-  url: tcp(43.143.136.7:3306) #url
+  url: tcp(127.0.0.1:3306) #url
   schema: go_test             #数据库
 dir:
   tmpl: templates/v1          #模版路径
