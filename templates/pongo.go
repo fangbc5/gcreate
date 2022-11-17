@@ -28,7 +28,7 @@ func (p *Pongo) Exec(data interface{}) {
 			template, _ := pongo2.FromFile(srcFile)
 			//pongo2.ApplyFilter("firstWord", , pongo2.Value{})
 			//准备数据
-			tables := data.([]db.Table)
+			tables := data.([]db.Data)
 			for _, table := range tables {
 				marshal, _ := json.Marshal(table)
 				context := pongo2.Context{}

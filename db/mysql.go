@@ -59,11 +59,11 @@ func (d *Datasource) Close() {
 	}
 }
 
-func (d *Datasource) GetTables(names ...string) []Table {
+func (d *Datasource) GetTables(names ...string) []Data {
 	conf := conf.MakeConfig()
-	tables := make([]Table, 0)
+	tables := make([]Data, 0)
 	for _, name := range names {
-		t := Table{}
+		t := Data{}
 		t.ProjectName = conf.Project.Name
 		t.ModuleName = conf.Project.Module
 		t.TableName = name
