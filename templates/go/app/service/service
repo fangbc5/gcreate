@@ -1,8 +1,8 @@
 package service
 
 import (
-	"{{ ProjectName }}/app/{{ ModuleName }}/dao"
-	"{{ ProjectName }}/app/{{ ModuleName }}/model"
+	"{{ ProjectName }}/{{ PackName }}/{{ ModuleName }}/dao"
+	"{{ ProjectName }}/{{ PackName }}/{{ ModuleName }}/model"
 	"{{ ProjectName }}/core"
 )
 

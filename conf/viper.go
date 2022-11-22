@@ -1,15 +1,17 @@
 package conf
 
 import (
-	"github.com/spf13/viper"
 	"log"
 	"os"
 	"sync"
+
+	"github.com/spf13/viper"
 )
 
 type Project struct {
-	Name   string
-	Module string
+	Name     string
+	PackName string
+	Module   string
 }
 type Mysql struct {
 	Username string

@@ -2,7 +2,7 @@ package blog
 
 import (
 	"github.com/gin-gonic/gin"
-	"{{ ProjectName }}/app/{{ ModuleName }}/api"
+	"{{ ProjectName }}/{{ PackName }}/{{ ModuleName }}/api"
 )
 
 func Routers(e *gin.Engine) {

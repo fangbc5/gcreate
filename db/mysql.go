@@ -65,6 +65,7 @@ func (d *Datasource) GetTables(names ...string) []Data {
 	for _, name := range names {
 		t := Data{}
 		t.ProjectName = conf.Project.Name
+		t.PackName = conf.Project.PackName
 		t.ModuleName = conf.Project.Module
 		t.TableName = name
 		t.ModelName = strings.ReplaceAll(name, conf.Prefix, "")

@@ -2,8 +2,8 @@ package api
 
 import (
 	"github.com/gin-gonic/gin"
-	"{{ ProjectName }}/app/{{ ModuleName }}/model"
-	"{{ ProjectName }}/app/{{ ModuleName }}/service"
+	"{{ ProjectName }}/{{ PackName }}/{{ ModuleName }}/model"
+	"{{ ProjectName }}/{{ PackName }}/{{ ModuleName }}/service"
 
 	"net/http"
 )
