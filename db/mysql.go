@@ -84,7 +84,13 @@ func (d *Datasource) GetTables(names ...string) []Data {
 			if ignore {
 				continue
 			}
-			f.DataType = toType(f.DataType)
+			if conf.Lang == "" {
+				panic("配置文件中project.lang不能为空")
+			} else if conf.Lang == "go" {
+				f.DataType = toGoType(f.DataType)
+			} else if conf.Lang == "java" {
+				f.DataType = toJavaType(f.DataType)
+			}
 			f.FieldName = camelName(f.FieldName)
 			if f.DataType == "time.Time" {
 				t.HasTime = true
@@ -123,20 +129,46 @@ func camelName(o string) string {
 	return o
 }
 
-func toType(o string) (n string) {
+func toGoType(o string) (n string) {
 	switch o {
-	case "text", "tinytext", "mediumtext", "longtext", "varchar":
+	case "text", "tinytext", "mediumtext", "longtext", "char", "varchar":
 		n = "string"
 	case "bigint":
-		n = "uint"
-	case "int", "tinyint", "smallint":
-		n = "uint"
-	case "float", "double", "decimal":
+		n = "int64"
+	case "int", "tinyint", "smallint", "mediumint":
+		n = "int"
+	case "float":
+		n = "float32"
+	case "double":
 		n = "float64"
-	case "date", "time", "datetime", "timestamp":
+	case "decimal":
+		n = "float64"
+	case "date", "time", "datetime", "timestamp", "year":
 		n = "time.Time"
 	default:
 		n = "string"
+	}
+	return
+}
+
+func toJavaType(o string) (n string) {
+	switch o {
+	case "text", "tinytext", "mediumtext", "longtext", "char", "varchar":
+		n = "String"
+	case "int", "tinyint", "smallint", "mediumint":
+		n = "Integer"
+	case "bigint":
+		n = "Long"
+	case "float":
+		n = "Float"
+	case "double":
+		n = "Double"
+	case "decimal":
+		n = "java.math.BigDecimal"
+	case "date", "time", "datetime", "timestamp", "year":
+		n = "java.sql.Timestamp"
+	default:
+		n = "String"
 	}
 	return
 }

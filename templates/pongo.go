@@ -5,11 +5,12 @@ import (
 	"gcreate/conf"
 	"gcreate/db"
 	"gcreate/handler"
-	"github.com/flosch/pongo2/v6"
 	"log"
 	"os"
 	"strconv"
 	"strings"
+
+	"github.com/flosch/pongo2/v6"
 )
 
 type Pongo struct {
@@ -22,7 +23,6 @@ func MakePongo() *Pongo {
 func (p *Pongo) Exec(data interface{}) {
 	handler.Try(func() {
 		pongo2.RegisterFilter("substr", substr)
-		pongo2.RegisterFilter("totype", totype)
 		// 获取目录下的所有模版文件
 		getfiles(conf.MakeConfig().Tmpl, conf.MakeConfig().Out, func(srcFile string, destFile string) {
 			template, _ := pongo2.FromFile(srcFile)
@@ -77,15 +77,33 @@ func getfiles(src string, dest string, f copycall) {
 func getFileName(name string, tname string) string {
 	idot := strings.LastIndex(name, ".")
 	igang := strings.LastIndex(name, "/")
-	if idot == -1 {
-		name = name + ".go"
+	suffix := ".go"
+	lang := conf.MakeConfig().Lang
+	split := ""
+	if lang == "go" {
+		suffix = ".go"
+		split = "_"
+	} else if lang == "java" {
+		suffix = ".java"
+		if igang != -1 {
+			if len(name) == igang + 2 {
+				name = name[:igang+1] + strings.ToUpper(name[igang+1:igang+2])
+			} else {
+				name = name[:igang+1] + strings.ToUpper(name[igang+1:igang+2]) + name[igang+2:]
+			}
+		}
 	} else {
-		name = strings.ReplaceAll(name, name[strings.LastIndex(name, "."):], ".go")
+		panic("暂不支持该编程语言：" + lang)
+	}
+	if idot == -1 {
+		name = name + suffix
+	} else {
+		name = strings.ReplaceAll(name, name[strings.LastIndex(name, "."):], suffix)
 	}
 	if igang == -1 {
-		name = tname + "_" + name
+		name = tname + split + name
 	} else {
-		name = name[:igang+1] + tname + "_" + name[igang+1:]
+		name = name[:igang+1] + tname + split + name[igang+1:]
 	}
 	return name
 }
@@ -101,25 +119,5 @@ func substr(in *pongo2.Value, param *pongo2.Value) (out *pongo2.Value, err *pong
 		return nil, nil
 	}
 	out = pongo2.AsValue(in.String()[begin:end])
-	return out, nil
-}
-
-func totype(in *pongo2.Value, param *pongo2.Value) (out *pongo2.Value, err *pongo2.Error) {
-	var dataType string
-	switch in.String() {
-	case "text", "tinytext", "mediumtext", "longtext", "varchar":
-		dataType = "string"
-	case "bigint":
-		dataType = "int64"
-	case "int", "tinyint", "smallint":
-		dataType = "int"
-	case "float", "double", "decimal":
-		dataType = "float64"
-	case "date", "time", "datetime", "timestamp":
-		dataType = "time.Time"
-	default:
-		dataType = "string"
-	}
-	out = pongo2.AsValue(dataType)
 	return out, nil
 }

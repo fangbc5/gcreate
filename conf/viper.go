@@ -9,6 +9,7 @@ import (
 )
 
 type Project struct {
+	Lang 	 string
 	Name     string
 	PackName string
 	Module   string

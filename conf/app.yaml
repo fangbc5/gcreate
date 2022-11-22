@@ -1,4 +1,5 @@
 project:            #涉及代码中依赖包的路径{project.name}/{project.package}/{project.module}
+  lang: go          #编程语言支持类型go、java
   name: halo        #项目名称
   packName: app      #包名
   module: blog      #模块名称
