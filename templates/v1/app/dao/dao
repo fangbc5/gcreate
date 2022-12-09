@@ -2,7 +2,7 @@ package dao
 
 import (
 	"{{ ProjectName }}/app/{{ ModuleName }}/model"
-	"{{ ProjectName }}/core"
+	"{{ ProjectName }}/core/common"
 	"{{ ProjectName }}/core/db"
 	"log"
 )
@@ -49,15 +49,15 @@ func ({{ ModelName|substr:"0,1" }} *{{ ModelName|capfirst }}Dao) Get({{ ModelNam
 	return
 }
 
-func ({{ ModelName|substr:"0,1" }} *{{ ModelName|capfirst }}Dao) GetPage({{ ModelName }} *model.{{ ModelName|capfirst }}) (pageRsp *core.PageRsp) {
-	pageRsp = core.GetPageRsp()
+func ({{ ModelName|substr:"0,1" }} *{{ ModelName|capfirst }}Dao) GetPage({{ ModelName }} *model.{{ ModelName|capfirst }}) (pageRsp *common.PageRsp) {
+	pageRsp = common.GetPageRsp()
 	result := make([]model.{{ ModelName|capfirst }}, {{ ModelName }}.Size)
 	db.Db.Table("{{ TableName }}").Count(&pageRsp.Total)
     err := db.Db.Offset(({{ ModelName }}.Page - 1) * {{ ModelName }}.Size).Limit({{ ModelName }}.Size).Find(&result).Error
     if err != nil {
         return nil
     }
-    pageRsp.Result = result
+    pageRsp.Data = result
     if pageRsp.Total%int64({{ ModelName }}.Size) > 0 {
         pageRsp.Pages = int(pageRsp.Total/int64({{ ModelName }}.Size)) + 1
     } else {

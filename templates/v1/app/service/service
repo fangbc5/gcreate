@@ -3,7 +3,7 @@ package service
 import (
 	"{{ ProjectName }}/app/{{ ModuleName }}/dao"
 	"{{ ProjectName }}/app/{{ ModuleName }}/model"
-	"{{ ProjectName }}/core"
+	"{{ ProjectName }}/core/common"
 )
 
 type {{ ModelName|capfirst }}Service struct {
@@ -26,6 +26,6 @@ func ({{ ModelName|substr:"0,1" }} *{{ ModelName|capfirst }}Service) Get({{ Mode
 	return {{ ModelName|substr:"0,1" }}.{{ ModelName|capfirst }}Dao.Get({{ ModelName }})
 }
 
-func ({{ ModelName|substr:"0,1" }} *{{ ModelName|capfirst }}Service) GetPage({{ ModelName }} *model.{{ ModelName|capfirst }}) *core.PageRsp {
+func ({{ ModelName|substr:"0,1" }} *{{ ModelName|capfirst }}Service) GetPage({{ ModelName }} *model.{{ ModelName|capfirst }}) *common.PageRsp {
 	return {{ ModelName|substr:"0,1" }}.{{ ModelName|capfirst }}Dao.GetPage({{ ModelName }})
 }

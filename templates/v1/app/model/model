@@ -2,13 +2,13 @@ package model
 
 import (
     "gorm.io/gorm"
-    "halo/core"
+    "{{ ProjectName }}/core/common"
     {% if HasTime %}"time"{% endif %}
 )
 
 type {{ ModelName|capfirst }} struct {
     gorm.Model
-    core.PageReq
+    common.PageReq
     {% for field in Fields %}{{ field.FieldName|capfirst }} {{ field.DataType }}
     {% endfor %}
 }

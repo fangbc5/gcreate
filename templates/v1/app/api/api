@@ -58,6 +58,6 @@ func ({{ ModelName|substr:"0,1" }} *{{ ModelName|capfirst }}Api) GetPage(c *gin.
     if err != nil {
         return
     }
-    pageRsp := {{ ModelName|substr:"0,1" }}.UserService.GetPage({{ ModelName }})
+    pageRsp := {{ ModelName|substr:"0,1" }}.{{ ModelName|capfirst }}Service.GetPage({{ ModelName }})
     c.JSON(http.StatusOK, pageRsp)
 }
