@@ -81,6 +81,10 @@ func (d *Datasource) GetTables(names ...string) []Table {
 			if ignore {
 				continue
 			}
+			//如果是主键字段，设置表主键
+			if f.Primary == "PRI" {
+				t.PrimaryKey = camelName(f.FieldName)
+			}
 			f.DataType = toType(f.DataType)
 			f.FieldName = camelName(f.FieldName)
 			if f.DataType == "time.Time" {

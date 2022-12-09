@@ -1,0 +1,31 @@
+package service
+
+import (
+	"{{ ProjectName }}/app/{{ ModuleName }}/dao"
+	"{{ ProjectName }}/app/{{ ModuleName }}/model"
+	"{{ ProjectName }}/core/common"
+)
+
+type {{ ModelName|capfirst }}Service struct {
+	dao.{{ ModelName|capfirst }}Dao
+}
+
+func ({{ ModelName|substr:"0,1" }} *{{ ModelName|capfirst }}Service) Insert{{ ModelName|capfirst }}({{ ModelName }} *model.{{ ModelName|capfirst }}) ({{ ModelName|substr:"0,1" }}id uint) {
+	return {{ ModelName|substr:"0,1" }}.{{ ModelName|capfirst }}Dao.Insert{{ ModelName|capfirst }}({{ ModelName }})
+}
+
+func ({{ ModelName|substr:"0,1" }} *{{ ModelName|capfirst }}Service) Delete{{ ModelName|capfirst }}({{ ModelName }} *model.{{ ModelName|capfirst }}) bool {
+	return {{ ModelName|substr:"0,1" }}.{{ ModelName|capfirst }}Dao.Delete{{ ModelName|capfirst }}({{ ModelName }})
+}
+
+func ({{ ModelName|substr:"0,1" }} *{{ ModelName|capfirst }}Service) Update{{ ModelName|capfirst }}({{ ModelName }} *model.{{ ModelName|capfirst }}) bool {
+	return {{ ModelName|substr:"0,1" }}.{{ ModelName|capfirst }}Dao.Update{{ ModelName|capfirst }}({{ ModelName }})
+}
+
+func ({{ ModelName|substr:"0,1" }} *{{ ModelName|capfirst }}Service) Get({{ ModelName }} *model.{{ ModelName|capfirst }}) *model.{{ ModelName|capfirst }} {
+	return {{ ModelName|substr:"0,1" }}.{{ ModelName|capfirst }}Dao.Get({{ ModelName }})
+}
+
+func ({{ ModelName|substr:"0,1" }} *{{ ModelName|capfirst }}Service) GetPage({{ ModelName }} *model.{{ ModelName|capfirst }}) *common.PageRsp {
+	return {{ ModelName|substr:"0,1" }}.{{ ModelName|capfirst }}Dao.GetPage({{ ModelName }})
+}

@@ -21,6 +21,7 @@ type Table struct {
 	HasTime     bool    //是否存在时间字段
 	TableName   string  //表名
 	ModelName   string  //模型名
+	PrimaryKey  string  //主键字段
 	Fields      []Field //字段列表
 }
 

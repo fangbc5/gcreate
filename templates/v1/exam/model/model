@@ -1,0 +1,12 @@
+package model
+
+import (
+    "{{ ProjectName }}/core/common"
+    {% if HasTime %}"time"{% endif %}
+)
+
+type {{ ModelName|capfirst }} struct {
+    common.PageReq
+    {% for field in Fields %}{{ field.FieldName|capfirst }} {{ field.DataType }} {% if field.Primary == "PRI" %}`gorm:"primaryKey"`{% endif %}
+    {% endfor %}
+}
