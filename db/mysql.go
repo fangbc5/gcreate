@@ -67,8 +67,8 @@ func (d *Datasource) GetTables(names ...string) []Table {
 		t.ProjectName = conf.Project.Name
 		t.ModuleName = conf.Project.ModuleName
 		t.InterfaceName = conf.Project.InterfaceName
-		t.TableName = name
-		t.ModelName = strings.ReplaceAll(name, conf.Prefix, "")
+		t.TableName = strings.ReplaceAll(name, conf.Prefix, "")
+		t.ModelName = camelName(t.TableName)
 		fields := make([]Field, 0)
 		sqlstr := "select COLUMN_NAME,COLUMN_COMMENT,DATA_TYPE,IS_NULLABLE,COLUMN_KEY from information_schema.COLUMNS where TABLE_SCHEMA = ? and TABLE_NAME = ?"
 		rows, _ := d.DB.Query(sqlstr, conf.Schema, name)

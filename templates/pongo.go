@@ -37,8 +37,8 @@ func (p *Pongo) Exec(data interface{}) {
 					log.Println(err)
 				}
 				//destFile名称处理
-				destFile = getFileName(destFile, table.ModelName)
-				file, _ := os.Create(destFile)
+				filename := getFileName(destFile, table.TableName)
+				file, _ := os.Create(filename)
 				err = template.ExecuteWriter(context, file)
 				if err != nil {
 					log.Println(err)
