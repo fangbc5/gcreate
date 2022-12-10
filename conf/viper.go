@@ -8,8 +8,9 @@ import (
 )
 
 type Project struct {
-	Name   string
-	Module string
+	Name          string
+	ModuleName    string
+	InterfaceName string
 }
 type Mysql struct {
 	Username string

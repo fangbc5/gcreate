@@ -1,6 +1,7 @@
 project:            #涉及代码中依赖包的路径{project.name}/app/{project.module}
   name: gogo        #项目名称
-  module: employer      #模块名称
+  moduleName: employer    #模块名称
+  interfaceName: 用户接口    #模块中文名
 table:
   names: employer     #生成表的名称多个用逗号隔开如t_user,t_role
   prefix:         #表名称前缀，实体类生成会将表名前缀去掉

@@ -42,7 +42,7 @@ func ({{ ModelName|substr:"0,1" }} *{{ ModelName|capfirst }}Dao) Update{{ ModelN
 
 func ({{ ModelName|substr:"0,1" }} *{{ ModelName|capfirst }}Dao) Get({{ ModelName }} *model.{{ ModelName|capfirst }}) (result *model.{{ ModelName|capfirst }}) {
 	result = &model.{{ ModelName|capfirst }}{}
-	err := db.Db.Find(result,{{ ModelName }}.{{ PrimaryKey|capfirst }}).Error
+	err := db.Db.First(result,{{ ModelName }}.{{ PrimaryKey|capfirst }}).Error
 	if err != nil {
 		return nil
 	}
@@ -59,7 +59,7 @@ func ({{ ModelName|substr:"0,1" }} *{{ ModelName|capfirst }}Dao) GetPage({{ Mode
     }
     pageRsp.Data = result
     if pageRsp.Total%int64({{ ModelName }}.Size) > 0 {
-        pageRsp.Pages = int(pageRsp.Total/int64({{ ModelName }}.Size)) + 1
+        pageRsp.Pages = int(pageRsp.Total / int64({{ ModelName }}.Size)) + 1
     } else {
         pageRsp.Pages = int(pageRsp.Total / int64({{ ModelName }}.Size))
     }

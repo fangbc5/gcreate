@@ -65,7 +65,8 @@ func (d *Datasource) GetTables(names ...string) []Table {
 	for _, name := range names {
 		t := Table{}
 		t.ProjectName = conf.Project.Name
-		t.ModuleName = conf.Project.Module
+		t.ModuleName = conf.Project.ModuleName
+		t.InterfaceName = conf.Project.InterfaceName
 		t.TableName = name
 		t.ModelName = strings.ReplaceAll(name, conf.Prefix, "")
 		fields := make([]Field, 0)

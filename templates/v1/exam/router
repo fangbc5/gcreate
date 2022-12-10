@@ -9,8 +9,8 @@ func Routers(e *gin.Engine) {
 	{{ ModelName }}Api := api.{{ ModelName|capfirst }}Api{}
 	{{ ModelName }}Group := e.Group("/{{ ModelName }}")
 	{{ ModelName }}Group.POST("/insert", {{ ModelName }}Api.Insert{{ ModelName|capfirst }})
-	{{ ModelName }}Group.POST("/delete", {{ ModelName }}Api.Delete{{ ModelName|capfirst }})
-	{{ ModelName }}Group.POST("/update", {{ ModelName }}Api.Update{{ ModelName|capfirst }})
-	{{ ModelName }}Group.POST("/get", {{ ModelName }}Api.Get)
-	{{ ModelName }}Group.POST("/getPage", {{ ModelName }}Api.GetPage)
+	{{ ModelName }}Group.DELETE("/delete/:id", {{ ModelName }}Api.Delete{{ ModelName|capfirst }})
+	{{ ModelName }}Group.PUT("/update/:id", {{ ModelName }}Api.Update{{ ModelName|capfirst }})
+	{{ ModelName }}Group.GET("/get/:id", {{ ModelName }}Api.Get)
+	{{ ModelName }}Group.POST("/getPage/:page/:size", {{ ModelName }}Api.GetPage)
 }

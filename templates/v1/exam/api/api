@@ -1,9 +1,11 @@
 package api
 
 import (
-	"github.com/gin-gonic/gin"
+    "github.com/gin-gonic/gin"
 	"{{ ProjectName }}/app/{{ ModuleName }}/model"
 	"{{ ProjectName }}/app/{{ ModuleName }}/service"
+	"{{ ProjectName }}/core/common"
+	"strconv"
 
 	"net/http"
 )
@@ -12,50 +14,139 @@ type {{ ModelName|capfirst }}Api struct {
 	service.{{ ModelName|capfirst }}Service
 }
 
+// Insert{{ ModelName|capfirst }} 新增{{ InterfaceName }}
+// @Summary 新增{{ InterfaceName }}
+// @Description 新增{{ InterfaceName }}
+// @Tags {{ InterfaceName }}
+// @Accept json
+// @Produce json
+// @Param Authorization header string false "Bearer 用户令牌"
+// @Param {{ ModelName }} body model.{{ ModelName|capfirst }} true "用户对象"
+// @Security ApiKeyAuth
+// @Success 200
+// @Router /{{ ModelName }}/insert [POST]
 func ({{ ModelName|substr:"0,1" }} *{{ ModelName|capfirst }}Api) Insert{{ ModelName|capfirst }}(c *gin.Context) {
-	{{ ModelName }} := &model.{{ ModelName|capfirst }}{}
-	err := c.ShouldBindJSON({{ ModelName }})
-	if err != nil {
-		return
-	}
-	result := {{ ModelName|substr:"0,1" }}.{{ ModelName|capfirst }}Service.Insert{{ ModelName|capfirst }}({{ ModelName }})
-	c.JSON(http.StatusOK, result)
-}
-
-func ({{ ModelName|substr:"0,1" }} *{{ ModelName|capfirst }}Api) Delete{{ ModelName|capfirst }}(c *gin.Context) {
-	{{ ModelName }} := &model.{{ ModelName|capfirst }}{}
-	err := c.ShouldBindJSON({{ ModelName }})
-	if err != nil {
-		return
-	}
-	result := {{ ModelName|substr:"0,1" }}.{{ ModelName|capfirst }}Service.Delete{{ ModelName|capfirst }}({{ ModelName }})
-	c.JSON(http.StatusOK, result)
-}
-
-func ({{ ModelName|substr:"0,1" }} *{{ ModelName|capfirst }}Api) Update{{ ModelName|capfirst }}(c *gin.Context) {
-	{{ ModelName }} := &model.{{ ModelName|capfirst }}{}
-	err := c.ShouldBindJSON({{ ModelName }})
-	if err != nil {
-		return
-	}
-	result := {{ ModelName|substr:"0,1" }}.{{ ModelName|capfirst }}Service.Update{{ ModelName|capfirst }}({{ ModelName }})
-	c.JSON(http.StatusOK, result)
-}
-
-func ({{ ModelName|substr:"0,1" }} *{{ ModelName|capfirst }}Api) Get(c *gin.Context) {
-	{{ ModelName }} := &model.{{ ModelName|capfirst }}{}
-	err := c.ShouldBindJSON({{ ModelName }})
-	if err != nil {
-		return
-	}
-	result := {{ ModelName|substr:"0,1" }}.{{ ModelName|capfirst }}Service.Get({{ ModelName }})
-	c.JSON(http.StatusOK, result)
-}
-
-func ({{ ModelName|substr:"0,1" }} *{{ ModelName|capfirst }}Api) GetPage(c *gin.Context) {
-	{{ ModelName }} := &model.{{ ModelName|capfirst }}{}
+    {{ ModelName }} := &model.{{ ModelName|capfirst }}{}
     err := c.ShouldBindJSON({{ ModelName }})
     if err != nil {
+        c.JSON(http.StatusOK, common.GetRspMsg("参数解析错误，请检查入参"))
+        return
+    }
+    result := {{ ModelName|substr:"0,1" }}.{{ ModelName|capfirst }}Service.Insert{{ ModelName|capfirst }}({{ ModelName }})
+    c.JSON(http.StatusOK, common.GetRspData(result))
+}
+
+// Delete{{ ModelName|capfirst }} 使用ID删除{{ InterfaceName }}
+// @Summary 使用ID删除{{ InterfaceName }}
+// @Description 使用ID删除{{ InterfaceName }}
+// @Tags {{ InterfaceName }}
+// @Accept json
+// @Produce json
+// @Param Authorization header string false "Bearer 用户令牌"
+// @Param id path integer true "id"
+// @Security ApiKeyAuth
+// @Success 200 {object} common.Rsp
+// @Failure 204 {object} common.Rsp
+// @Router /{{ ModelName }}/delete/{id} [DELETE]
+func ({{ ModelName|substr:"0,1" }} *{{ ModelName|capfirst }}Api) Delete{{ ModelName|capfirst }}(c *gin.Context) {
+    id := c.Param("id")
+    {{ PrimaryKey }}, err := strconv.Atoi(id)
+    if err != nil {
+        c.JSON(http.StatusOK, common.GetFailMsg("id不是有效数字"))
+        return
+    }
+	{{ ModelName }} := &model.{{ ModelName|capfirst }}{}
+    {{ ModelName }}.{{ PrimaryKey|capfirst }} = uint({{ PrimaryKey }})
+	result := {{ ModelName|substr:"0,1" }}.{{ ModelName|capfirst }}Service.Delete{{ ModelName|capfirst }}({{ ModelName }})
+    c.JSON(http.StatusOK, common.GetRspData(result))
+}
+
+// Update{{ ModelName|capfirst }} 修改{{ InterfaceName }}
+// @Summary 修改{{ InterfaceName }}
+// @Description 修改{{ InterfaceName }}
+// @Tags {{ InterfaceName }}
+// @Accept json
+// @Produce json
+// @Param Authorization header string false "Bearer 用户令牌"
+// @Param id path integer true "id"
+// @Param {{ ModelName }} body model.{{ ModelName|capfirst }} true "用户对象"
+// @Security ApiKeyAuth
+// @Success 200 {object} common.Rsp
+// @Failure 204 {object} common.Rsp
+// @Router /{{ ModelName }}/update/{id} [PUT]
+func ({{ ModelName|substr:"0,1" }} *{{ ModelName|capfirst }}Api) Update{{ ModelName|capfirst }}(c *gin.Context) {
+	id := c.Param("id")
+    {{ PrimaryKey }}, err := strconv.Atoi(id)
+    if err != nil {
+        c.JSON(http.StatusOK, common.GetFailMsg("id不是有效数字"))
+        return
+    }
+    {{ ModelName }} := &model.{{ ModelName|capfirst }}{}
+    {{ ModelName }}.{{ PrimaryKey|capfirst }} = uint({{ PrimaryKey }})
+    err = c.ShouldBindJSON({{ ModelName }})
+    if err != nil {
+        c.JSON(http.StatusOK, common.GetRspMsg("参数解析错误，请检查入参"))
+        return
+    }
+    result := {{ ModelName|substr:"0,1" }}.{{ ModelName|capfirst }}Service.Update{{ ModelName|capfirst }}({{ ModelName }})
+    c.JSON(http.StatusOK, common.GetRspData(result))
+}
+
+// Get 使用ID查询{{ InterfaceName }}
+// @Summary 使用ID查询{{ InterfaceName }}
+// @Description 使用ID查询{{ InterfaceName }}
+// @Tags {{ InterfaceName }}
+// @Produce json
+// @Param Authorization header string false "Bearer 用户令牌"
+// @Param id path integer true "id"
+// @Security ApiKeyAuth
+// @Success 200 {object} common.Rsp
+// @Failure 204 {object} common.Rsp
+// @Router /employer/get/{id} [GET]
+func ({{ ModelName|substr:"0,1" }} *{{ ModelName|capfirst }}Api) Get(c *gin.Context) {
+	id := c.Param("id")
+    {{ PrimaryKey }}, err := strconv.Atoi(id)
+    if err != nil {
+        c.JSON(http.StatusOK, common.GetFailMsg("id不是有效数字"))
+        return
+    }
+    {{ ModelName }} := &model.{{ ModelName|capfirst }}{}
+    {{ ModelName }}.{{ PrimaryKey|capfirst }} = uint({{ PrimaryKey }})
+	result := {{ ModelName|substr:"0,1" }}.{{ ModelName|capfirst }}Service.Get({{ ModelName }})
+	c.JSON(http.StatusOK, common.GetRspData(result))
+}
+
+// GetPage 分页查询{{ InterfaceName }}
+// @Summary 分页查询{{ InterfaceName }}
+// @Description 分页查询{{ InterfaceName }}
+// @Tags {{ InterfaceName }}
+// @Accept json
+// @Produce json
+// @Param Authorization header string false "Bearer 用户令牌"
+// @Param page path integer true "page"
+// @Param size path integer true "size"
+// @Param {{ ModelName }} body model.{{ ModelName|capfirst }} false "用户对象"
+// @Security ApiKeyAuth
+// @Success 200 {object} common.Rsp
+// @Failure 204 {object} common.Rsp
+// @Router /{{ ModelName }}/getPage/{page}/{size} [POST]
+func ({{ ModelName|substr:"0,1" }} *{{ ModelName|capfirst }}Api) GetPage(c *gin.Context) {
+	page, err := strconv.Atoi(c.Param("page"))
+    if err != nil {
+        c.JSON(http.StatusOK, common.GetFailMsg("page不是有效数字"))
+        return
+    }
+    size, err1 := strconv.Atoi(c.Param("size"))
+    if err1 != nil {
+        c.JSON(http.StatusOK, common.GetFailMsg("size不是有效数字"))
+        return
+    }
+    {{ ModelName }} := &model.{{ ModelName|capfirst }}{}
+    {{ ModelName }}.Page = page
+    {{ ModelName }}.Size = size
+    err = c.ShouldBindJSON({{ ModelName }})
+    if err != nil {
+        c.JSON(http.StatusOK, common.GetRspMsg("参数解析错误，请检查入参"))
         return
     }
     pageRsp := {{ ModelName|substr:"0,1" }}.{{ ModelName|capfirst }}Service.GetPage({{ ModelName }})
