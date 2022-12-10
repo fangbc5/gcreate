@@ -102,7 +102,7 @@ func ({{ ModelName|substr:"0,1" }} *{{ ModelName|capfirst }}Api) Update{{ ModelN
 // @Security ApiKeyAuth
 // @Success 200 {object} common.Rsp
 // @Failure 204 {object} common.Rsp
-// @Router /employer/get/{id} [GET]
+// @Router /{{ ModelName }}/get/{id} [GET]
 func ({{ ModelName|substr:"0,1" }} *{{ ModelName|capfirst }}Api) Get(c *gin.Context) {
 	id := c.Param("id")
     {{ PrimaryKey }}, err := strconv.Atoi(id)
