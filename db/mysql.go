@@ -101,8 +101,6 @@ func (d *Datasource) GetTables(names ...string) []Table {
 
 func getIgore(name string) bool {
 	switch strings.ToLower(name) {
-	case "id":
-		return true
 	case "created_at":
 		return true
 	case "updated_at":

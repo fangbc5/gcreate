@@ -49,8 +49,8 @@ func ({{ ModelName|substr:"0,1" }} *{{ ModelName|capfirst }}Api) Insert{{ ModelN
 // @Failure 204 {object} common.Rsp
 // @Router /{{ ModelName }}/delete/{id} [DELETE]
 func ({{ ModelName|substr:"0,1" }} *{{ ModelName|capfirst }}Api) Delete{{ ModelName|capfirst }}(c *gin.Context) {
-    id := c.Param("id")
-    {{ PrimaryKey }}, err := strconv.Atoi(id)
+    idStr := c.Param("id")
+    {{ PrimaryKey }}, err := strconv.Atoi(idStr)
     if err != nil {
         c.JSON(http.StatusOK, common.GetFailMsg("id不是有效数字"))
         return
@@ -75,8 +75,8 @@ func ({{ ModelName|substr:"0,1" }} *{{ ModelName|capfirst }}Api) Delete{{ ModelN
 // @Failure 204 {object} common.Rsp
 // @Router /{{ ModelName }}/update/{id} [PUT]
 func ({{ ModelName|substr:"0,1" }} *{{ ModelName|capfirst }}Api) Update{{ ModelName|capfirst }}(c *gin.Context) {
-	id := c.Param("id")
-    {{ PrimaryKey }}, err := strconv.Atoi(id)
+	idStr := c.Param("id")
+    {{ PrimaryKey }}, err := strconv.Atoi(idStr)
     if err != nil {
         c.JSON(http.StatusOK, common.GetFailMsg("id不是有效数字"))
         return
@@ -104,8 +104,8 @@ func ({{ ModelName|substr:"0,1" }} *{{ ModelName|capfirst }}Api) Update{{ ModelN
 // @Failure 204 {object} common.Rsp
 // @Router /{{ ModelName }}/get/{id} [GET]
 func ({{ ModelName|substr:"0,1" }} *{{ ModelName|capfirst }}Api) Get(c *gin.Context) {
-	id := c.Param("id")
-    {{ PrimaryKey }}, err := strconv.Atoi(id)
+	idStr := c.Param("id")
+    {{ PrimaryKey }}, err := strconv.Atoi(idStr)
     if err != nil {
         c.JSON(http.StatusOK, common.GetFailMsg("id不是有效数字"))
         return
