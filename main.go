@@ -2,15 +2,15 @@ package main
 
 import (
 	"gcreate/conf"
-	"gcreate/pongo"
+	"gcreate/flow"
 )
 
 func main() {
 	//加载配置
-	conf.Init()
-
+	c := conf.Init()
+	flow.Start(c)
 	//加载模版引擎
-	pongo.Exec("")
+	// pongo.Exec(c.Dir.Tmpl,c.Dir.Out,"")
 	//创建数据库连接
 
 	//执行生成

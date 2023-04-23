@@ -1,6 +1,7 @@
 package pongo
 
 import (
+	"log"
 	"os"
 	"strconv"
 	"strings"
@@ -8,14 +9,21 @@ import (
 	"github.com/flosch/pongo2/v6"
 )
 
-func Exec(data interface{}) {
+func Exec(srcDir string, destDir string, data interface{}) error {
 	pongo2.RegisterFilter("substr", substr)
 	pongo2.RegisterFilter("totype", totype)
-	// template, _ := pongo2.FromFile(srcFile)
-	// err = template.ExecuteWriter(context, file)
-	// if err != nil {
-	// 	log.Println(err)
-	// }
+	getfiles(srcDir, destDir, func(srcFile, destFile string) {
+		template, err := pongo2.FromFile(srcFile)
+		file, err := os.Create(destFile)
+		if err != nil {
+			log.Fatalf("pongo2：文件写入失败，%v", err)
+		}
+		err = template.ExecuteWriter(pongo2.Context{}, file)
+		if err != nil {
+			log.Fatalf("pongo2：文件写入失败，%v", err)
+		}
+	})
+	return nil
 }
 
 type copycall func(srcFile string, destFile string)

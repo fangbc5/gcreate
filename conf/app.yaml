@@ -1,10 +1,11 @@
-#表名称前缀，实体类生成会将表名前缀去掉
 mysql:    
-  address: 43.143.136.7        #数据库连接信息
+  address: 43.143.136.7       
   port: 3306
-  username: root                #用户名
-  password: 1qaz!QAZ              #密码
-  database: ginapi             #数据库
+  username: root               
+  password: 1qaz!QAZ              
+  database: ginapi            
 dir:
-  tmpl: templates/v1/exam          #模版路径
-  out: templates/v2/exam         #代码生成路径
+  #模版路径
+  tmpl: templates/v2    
+  #项目名，在$GO_PATH下生成该名称项目
+  out: aaa             
