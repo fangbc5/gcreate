@@ -1,37 +1,27 @@
 package conf
 
 import (
-	"github.com/spf13/viper"
 	"log"
 	"os"
 	"sync"
+
+	"github.com/spf13/viper"
 )
 
-type Project struct {
-	Name          string
-	ModuleName    string
-	InterfaceName string
-}
 type Mysql struct {
+	Address  string
+	Port     string
 	Username string
 	Password string
-	Driver   string
-	Url      string
-	Schema   string
-}
-
-type Table struct {
-	Names  []string
-	Prefix string
+	Database string
 }
 
 type Dir struct {
 	Tmpl string
 	Out  string
 }
+
 type Configuration struct {
-	Project
-	Table
 	Mysql
 	Dir
 }
@@ -39,7 +29,7 @@ type Configuration struct {
 var model *Configuration
 var lock sync.Mutex
 
-func MakeConfig() *Configuration {
+func makeConfig() *Configuration {
 	if model == nil {
 		lock.Lock()
 		if model == nil {
@@ -50,7 +40,8 @@ func MakeConfig() *Configuration {
 	return model
 }
 
-func (c *Configuration) Load() *Configuration {
+func Init() *Configuration {
+	makeConfig()
 	viper.SetConfigType("yaml")
 	viper.SetConfigFile("app.yaml")
 	viper.SetConfigName("app")

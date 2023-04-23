@@ -1,4 +1,4 @@
-package templates
+package pongo
 
 import (
 	"os"
@@ -8,15 +8,7 @@ import (
 	"github.com/flosch/pongo2/v6"
 )
 
-type Pongo struct {
-}
-
-func MakePongo() *Pongo {
-	return &Pongo{}
-}
-
-func (p *Pongo) Exec(data interface{}) {
-
+func Exec(data interface{}) {
 	pongo2.RegisterFilter("substr", substr)
 	pongo2.RegisterFilter("totype", totype)
 	// template, _ := pongo2.FromFile(srcFile)
@@ -24,12 +16,7 @@ func (p *Pongo) Exec(data interface{}) {
 	// if err != nil {
 	// 	log.Println(err)
 	// }
-
 }
-
-//func getFiles(src string, dest string) map[string]string{
-//	os.Stat(src)
-//}
 
 type copycall func(srcFile string, destFile string)
 
