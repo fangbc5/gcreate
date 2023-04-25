@@ -17,8 +17,8 @@ type Mysql struct {
 }
 
 type Dir struct {
-	Tmpl string
-	Out  string
+	Tmpl        string
+	ProjectName string
 }
 
 type Configuration struct {
@@ -29,7 +29,7 @@ type Configuration struct {
 var model *Configuration
 var lock sync.Mutex
 
-func makeConfig() *Configuration {
+func GetConfig() *Configuration {
 	if model == nil {
 		lock.Lock()
 		if model == nil {
@@ -41,7 +41,7 @@ func makeConfig() *Configuration {
 }
 
 func Init() *Configuration {
-	makeConfig()
+	GetConfig()
 	viper.SetConfigType("yaml")
 	viper.SetConfigFile("app.yaml")
 	viper.SetConfigName("app")

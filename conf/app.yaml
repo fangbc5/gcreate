@@ -3,9 +3,9 @@ mysql:
   port: 3306
   username: root               
   password: 1qaz!QAZ              
-  database: ginapi            
+  database: genapi            
 dir:
   #模版路径
   tmpl: templates/v2    
   #项目名，在$GO_PATH下生成该名称项目
-  out: aaa             
+  projectName: aaa             
