@@ -5,4 +5,6 @@ type BusiFlowDao struct {
 	Name    string
 	Code    string
 	Comment string
+	Sql       string
+	SqlParams string
 }
