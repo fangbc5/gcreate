@@ -2,8 +2,8 @@ package handler
 
 import (
 	"{{ProjectName}}/flowmain"
-	{% if InputParamsType == "metadata" || OutputParamsType == "metadata" %}"{{ProjectName}}/metadata"{% endif %}
-	{% if InputParamsType == "metavo" || OutputParamsType == "metavo" %}"{{ProjectName}}/metavo"{% endif %}
+	{% if metadata %}"{{ProjectName}}/metadata"{% endif %}
+	{% if metavo %}"{{ProjectName}}/metavo"{% endif %}
 	"net/http"
 
 	"github.com/fangbc5/gogo/core/common"

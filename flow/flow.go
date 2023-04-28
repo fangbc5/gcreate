@@ -29,11 +29,10 @@ func Start(c *conf.Configuration) {
 	if err := createMainFile(projectRoot, app); err != nil {
 		log.Fatal(err)
 	}
-	metaAllTypeMap := make(map[string]interface{}, 10)
-	for _, intf := range app.Interfaces {
-		metaAllTypeMap[intf.InputParamsType] = nil
-		metaAllTypeMap[intf.OutputParamsType] = nil
-	}
+	intfMetaMap := make(map[string]interface{}, 16)
+	mainFlowMetaMap := make(map[string]interface{}, 16)
+	childFlowMetaMap := make(map[string]interface{}, 16)
+	
 	//创建所有接口、流程、子流程需要用到的metadata和metavo的map
 	createDir(projectRoot + "/metadata")
 	createDir(projectRoot + "/metavo")
@@ -43,14 +42,16 @@ func Start(c *conf.Configuration) {
 	for _, intf := range app.Interfaces {
 		if i == 0 {
 			createDir(projectRoot + "/handler")
-			pongo.ExecOne("tmpl/project/handler/header.go", projectRoot+"/handler/handler.go", app, os.O_CREATE)
+			pongo.ExecOne("tmpl/project/handler/header.go", projectRoot+"/handler/handler.go", metaAllTypeMap, os.O_CREATE)
 			i++
 		}
 		if intf.InputParamsId != 0 && intf.InputParamsCode != "" {
 			if intf.InputParamsType == "metadata" {
 				metadatamap[intf.InputParamsId] = nil
+				intfMetaMap["Metadata"] = true
 			} else if intf.InputParamsType == "metavo" {
 				metavomap[intf.InputParamsId] = nil
+				intfMetaMap["Metavo"] = true
 			}
 		}
 		api.Preload("BusiFlows").Find(intf)
@@ -65,8 +66,10 @@ func Start(c *conf.Configuration) {
 			if flowmain.InputParamsId != 0 && flowmain.InputParamsCode != "" {
 				if flowmain.InputParamsType == "metadata" {
 					metadatamap[intf.InputParamsId] = nil
+					mainFlowMetaMap["Metadata"] = true
 				} else if flowmain.InputParamsType == "metavo" {
 					metavomap[intf.InputParamsId] = nil
+					mainFlowMetaMap["Metavo"] = true
 				}
 			}
 			api.Preload("Childs").Find(flowmain)
@@ -81,8 +84,10 @@ func Start(c *conf.Configuration) {
 				if flowchild.InputParamsId != 0 && flowchild.InputParamsCode != "" {
 					if flowchild.InputParamsType == "metadata" {
 						metadatamap[intf.InputParamsId] = nil
+						childFlowMetaMap["Metadata"] = true
 					} else if flowchild.InputParamsType == "metavo" {
 						metavomap[intf.InputParamsId] = nil
+						childFlowMetaMap["Metavo"] = true
 					}
 				}
 				api.Preload("ActionDao").Preload("ActionDco").Preload("ActionRpc").Preload("ActionMsg").Find(flowchild)
