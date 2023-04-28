@@ -7,6 +7,7 @@ import (
 	"os"
 	"strconv"
 	"strings"
+	"time"
 
 	"github.com/flosch/pongo2/v6"
 )
@@ -44,6 +45,8 @@ func ExecOne(srcFile string, destFile string, data interface{}, flag int) {
 	pongo2.RegisterFilter("substr", substr)
 	pongo2.RegisterFilter("totype", totype)
 	pongo2.RegisterFilter("upper", upper)
+	pongo2.RegisterFilter("lower", lower)
+
 	marshal, _ := json.Marshal(data)
 	context := pongo2.Context{}
 	err := json.Unmarshal(marshal, &context)
@@ -51,8 +54,41 @@ func ExecOne(srcFile string, destFile string, data interface{}, flag int) {
 		log.Fatal(err)
 	}
 	template, err := pongo2.FromFile(srcFile)
+	if err != nil {
+		log.Fatal(err)
+	}
 	var file *os.File
-	file.Close()
+	defer file.Close()
+	if flag == os.O_CREATE {
+		file, _ = os.Create(destFile)
+	} else {
+		file, _ = os.OpenFile(destFile, os.O_APPEND, 0644)
+	}
+	context["ProjectName"] = conf.GetConfig().Dir.ProjectName
+	template.ExecuteWriter(context, file)
+}
+
+func ExecOneFromStringTmpl(srcFile string, destFile string, data interface{}, flag int) {
+	pongo2.RegisterFilter("substr", substr)
+	pongo2.RegisterFilter("totype", totype)
+	pongo2.RegisterFilter("upper", upper)
+	pongo2.RegisterFilter("lower", lower)
+
+	context := pongo2.Context{}
+	if data != nil {
+		marshal, _ := json.Marshal(data)
+		err := json.Unmarshal(marshal, &context)
+		if err != nil {
+			log.Fatal(err)
+		}
+	}
+
+	template, err := pongo2.FromString(srcFile)
+	if err != nil {
+		log.Fatal(err)
+	}
+	var file *os.File
+	defer file.Close()
 	if flag == os.O_CREATE {
 		file, _ = os.Create(destFile)
 	} else {
@@ -97,8 +133,18 @@ func getFileName(name string, tname string) string {
 	return name
 }
 
+func tempvar(in *pongo2.Value, param *pongo2.Value) (*pongo2.Value, *pongo2.Error) {
+	result := "tmp" + strings.ToLower(in.String()) + string(time.Now().UnixNano())
+	return pongo2.AsSafeValue(result), nil
+}
+
 func upper(in *pongo2.Value, param *pongo2.Value) (*pongo2.Value, *pongo2.Error) {
 	result := strings.ToUpper(in.String())
+	return pongo2.AsSafeValue(result), nil
+}
+
+func lower(in *pongo2.Value, param *pongo2.Value) (*pongo2.Value, *pongo2.Error) {
+	result := strings.ToLower(in.String())
 	return pongo2.AsSafeValue(result), nil
 }
 
