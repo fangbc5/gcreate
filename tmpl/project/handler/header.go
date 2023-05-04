@@ -1,9 +1,9 @@
 package handler
 
 import (
-	"{{ProjectName}}/flowmain"
-	{% if metadata %}"{{ProjectName}}/metadata"{% endif %}
-	{% if metavo %}"{{ProjectName}}/metavo"{% endif %}
+	"{{ProjectName}}/busiflow"
+	{% if Metadata %}"{{ProjectName}}/metadata"{% endif %}
+	{% if Metavo %}"{{ProjectName}}/metavo"{% endif %}
 	"net/http"
 
 	"github.com/fangbc5/gogo/core/common"
@@ -11,5 +11,5 @@ import (
 )
 
 type Handler struct{
-	flowmain.FlowMain
+	busiflow.BusiFlow
 }

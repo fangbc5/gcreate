@@ -3,11 +3,10 @@ package flow
 import (
 	"gcreate/conf"
 	"gcreate/model"
-	"gcreate/pongo"
 	"log"
-	"os"
 
 	db "github.com/fangbc5/gogo/core/database/mysql"
+	"gorm.io/gorm"
 )
 
 func Start(c *conf.Configuration) {
@@ -21,91 +20,119 @@ func Start(c *conf.Configuration) {
 	//加载application
 	api := db.GetGormApi()
 	app := &model.Application{Id: 1}
-	api.Preload("Interfaces").Find(app)
+	intfs := loadApp(api, app)
 	c.Dir.ProjectName = app.Code
-	log.Println("创建项目文件夹")
 	//创建项目文件夹
-	projectRoot := createProject(app.Code)
-	if err := createMainFile(projectRoot, app); err != nil {
-		log.Fatal(err)
-	}
-	intfMetaMap := make(map[string]interface{}, 16)
-	mainFlowMetaMap := make(map[string]interface{}, 16)
-	childFlowMetaMap := make(map[string]interface{}, 16)
+	projectRoot := createProjectDir(app)
+	bfs, metaflagintf := loadBusiFlow(api, intfs)
+	bfcs, metaflagbf := loadBusiFlowChild(api, bfs)
+	metaflagbfc := loadBusiFlowChildOper(api, bfcs)
 	
-	//创建所有接口、流程、子流程需要用到的metadata和metavo的map
-	createDir(projectRoot + "/metadata")
-	createDir(projectRoot + "/metavo")
-	metadatamap := make(map[int]interface{}, 32)
-	metavomap := make(map[int]interface{}, 32)
-	var i, j, k int = 0, 0, 0
-	for _, intf := range app.Interfaces {
-		if i == 0 {
-			createDir(projectRoot + "/handler")
-			pongo.ExecOne("tmpl/project/handler/header.go", projectRoot+"/handler/handler.go", metaAllTypeMap, os.O_CREATE)
-			i++
-		}
-		if intf.InputParamsId != 0 && intf.InputParamsCode != "" {
-			if intf.InputParamsType == "metadata" {
-				metadatamap[intf.InputParamsId] = nil
-				intfMetaMap["Metadata"] = true
-			} else if intf.InputParamsType == "metavo" {
-				metavomap[intf.InputParamsId] = nil
-				intfMetaMap["Metavo"] = true
-			}
-		}
-		api.Preload("BusiFlows").Find(intf)
-		log.Println("生成处理器: " + intf.Name)
-		createHandler(projectRoot, intf)
-		for _, flowmain := range intf.BusiFlows {
-			if j == 0 {
-				createDir(projectRoot + "/flowmain")
-				pongo.ExecOne("tmpl/project/flowmain/header.go", projectRoot+"/flowmain/flowmain.go", intf, os.O_CREATE)
-				j++
-			}
-			if flowmain.InputParamsId != 0 && flowmain.InputParamsCode != "" {
-				if flowmain.InputParamsType == "metadata" {
-					metadatamap[intf.InputParamsId] = nil
-					mainFlowMetaMap["Metadata"] = true
-				} else if flowmain.InputParamsType == "metavo" {
-					metavomap[intf.InputParamsId] = nil
-					mainFlowMetaMap["Metavo"] = true
-				}
-			}
-			api.Preload("Childs").Find(flowmain)
-			log.Println("生成flowmain: " + flowmain.Name)
-			createFlowMain(projectRoot, flowmain)
-			for _, flowchild := range flowmain.Childs {
-				if k == 0 {
-					createDir(projectRoot + "/flowchild")
-					pongo.ExecOne("tmpl/project/flowchild/header.go", projectRoot+"/flowchild/flowchild.go", flowmain, os.O_CREATE)
-					k++
-				}
-				if flowchild.InputParamsId != 0 && flowchild.InputParamsCode != "" {
-					if flowchild.InputParamsType == "metadata" {
-						metadatamap[intf.InputParamsId] = nil
-						childFlowMetaMap["Metadata"] = true
-					} else if flowchild.InputParamsType == "metavo" {
-						metavomap[intf.InputParamsId] = nil
-						childFlowMetaMap["Metavo"] = true
-					}
-				}
-				api.Preload("ActionDao").Preload("ActionDco").Preload("ActionRpc").Preload("ActionMsg").Find(flowchild)
-				log.Println("生成flowchild: " + flowchild.Name)
-				createFlowChild(projectRoot, flowchild)
-			}
-		}
-	}
-	for key := range metadatamap {
-		metadata := &model.Metadata{}
-		api.Table("metadata").Where("id = ?", key).First(metadata)
-		createMetadata(projectRoot, metadata)
-	}
-	for key := range metavomap {
-		metavo := &model.Metavo{}
-		api.Table("metavo").Where("id = ?", key).First(metavo)
-		createMetavo(projectRoot, metavo)
-	}
+	//并行创建handler
+	go createHandler(projectRoot, intfs, metaflagintf)
+	//并行创建busiflow
+	go createBusiFlow(projectRoot, bfs, metaflagbf)
+	//并行创建busiflowchild
+	go createBusiFlowChild(projectRoot, bfcs, metaflagbfc)
+	//并行创建metadata和metavo
+	metaflag := duplicateMeta(metaflagintf,metaflagbf,metaflagbfc)
+	go createMetadata(projectRoot, api, metaflag)
+	go createMetavo(projectRoot, api, metaflag)
+	log.Println("应用全部信息加载完毕！！！")
+
 	execCommand(app.Code, "go", "mod", "init")
 	execCommand(app.Code, "go", "mod", "tidy")
+}
+
+func loadApp(api *gorm.DB, app *model.Application) []*model.Interface {
+	api.Preload("Interfaces").Find(app)
+	return app.Interfaces
+}
+
+func loadBusiFlow(api *gorm.DB, intfs []*model.Interface) ([]*model.BusiFlow, *Metaflag) {
+	bf := make([]*model.BusiFlow, 0)
+	metaflag := new(Metaflag)
+	metaflag.MetadataMap = make(map[int]interface{}, 0)
+	metaflag.MetavoMap = make(map[int]interface{}, 0)
+	for _, intf := range intfs {
+		api.Preload("BusiFlows").Find(intf)
+		bf = append(bf, intf.BusiFlows...)
+		if intf.InputParamsType == "metadata" || intf.InputParamsType == "metadata" {
+			metaflag.Metadata = true
+			if intf.InputParamsId != 0 {
+				metaflag.MetadataMap[intf.InputParamsId] = 1
+			}
+			if intf.OutputParamsId != 0 {
+				metaflag.MetadataMap[intf.OutputParamsId] = 1
+			}
+		}
+		if intf.InputParamsType == "metavo" || intf.InputParamsType == "metavo" {
+			metaflag.Metavo = true
+			if intf.InputParamsId != 0 {
+				metaflag.MetavoMap[intf.InputParamsId] = 1
+			}
+			if intf.OutputParamsId != 0 {
+				metaflag.MetavoMap[intf.OutputParamsId] = 1
+			}
+		}
+	}
+	return bf, metaflag
+}
+
+func loadBusiFlowChild(api *gorm.DB, bfs []*model.BusiFlow) ([]*model.BusiFlowChild, *Metaflag) {
+	bfc := make([]*model.BusiFlowChild, 0)
+	metaflag := new(Metaflag)
+	metaflag.MetadataMap = make(map[int]interface{}, 0)
+	metaflag.MetavoMap = make(map[int]interface{}, 0)
+	for _, bf := range bfs {
+		api.Preload("Childs").Find(bf)
+		bfc = append(bfc, bf.Childs...)
+		if bf.InputParamsType == "metadata" || bf.InputParamsType == "metadata" {
+			metaflag.Metadata = true
+			if bf.InputParamsId != 0 {
+				metaflag.MetadataMap[bf.InputParamsId] = 1
+			}
+			if bf.OutputParamsId != 0 {
+				metaflag.MetadataMap[bf.OutputParamsId] = 1
+			}
+		}
+		if bf.InputParamsType == "metavo" || bf.InputParamsType == "metavo" {
+			metaflag.Metavo = true
+			if bf.InputParamsId != 0 {
+				metaflag.MetavoMap[bf.InputParamsId] = 1
+			}
+			if bf.OutputParamsId != 0 {
+				metaflag.MetavoMap[bf.OutputParamsId] = 1
+			}
+		}
+	}
+	return bfc, metaflag
+}
+
+func loadBusiFlowChildOper(api *gorm.DB, bfcs []*model.BusiFlowChild) *Metaflag {
+	metaflag := new(Metaflag)
+	metaflag.MetadataMap = make(map[int]interface{}, 0)
+	metaflag.MetavoMap = make(map[int]interface{}, 0)
+	for _, bfc := range bfcs {
+		api.Preload("ActionDao").Preload("ActionDco").Preload("ActionRpc").Preload("ActionMsg").Find(bfc)
+		if bfc.InputParamsType == "metadata" || bfc.InputParamsType == "metadata" {
+			metaflag.Metadata = true
+			if bfc.InputParamsId != 0 {
+				metaflag.MetadataMap[bfc.InputParamsId] = 1
+			}
+			if bfc.OutputParamsId != 0 {
+				metaflag.MetadataMap[bfc.OutputParamsId] = 1
+			}
+		}
+		if bfc.InputParamsType == "metavo" || bfc.InputParamsType == "metavo" {
+			metaflag.Metavo = true
+			if bfc.InputParamsId != 0 {
+				metaflag.MetavoMap[bfc.InputParamsId] = 1
+			}
+			if bfc.OutputParamsId != 0 {
+				metaflag.MetavoMap[bfc.OutputParamsId] = 1
+			}
+		}
+	}
+	return metaflag
 }
